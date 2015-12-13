@@ -29,7 +29,6 @@
 }
 
 .slideshow__wrapper {
-  width: 600px;
   position: relative;
   left: 0;
   transition: left 0.3s ease-in;
