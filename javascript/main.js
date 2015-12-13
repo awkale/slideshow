@@ -9,7 +9,6 @@
   $slideshow.innerHTML = '<div class="slideshow__wrapper cf">' + $slideshow.innerHTML + '</div>';
 
   var $slideWrapper = document.querySelector('.slideshow__wrapper');
-  setInterval(onInterval, 1000);
 
   // get number of images
   // to get contraint and reset
@@ -35,5 +34,6 @@
     }
     $slideWrapper.style.left = -1*currImage*width+'px';
   }
+  setInterval(onInterval, 1000);
 
 })();
