@@ -1,1 +1,37 @@
 /* CURRENTLY IN: styles/main.css */
+* {
+  box-sizing: border-box;
+}
+.cf:before,
+.cf:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+.cf:after {
+    clear: both;
+}
+
+.slideshow {
+  width: 200px;
+  border: 1px solid black;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.slideshow__img {
+  width: 100%;
+}
+
+.slideshow__item {
+  float: left;
+  width: 200px;
+}
+
+.slideshow__wrapper {
+  width: 600px;
+  position: relative;
+  left: 0;
+  transition: left 0.3s ease-in;
+}
+
