@@ -8,6 +8,11 @@
   var $slideshow = document.querySelector('.slideshow'); // $(".slideshow")
   $slideshow.innerHTML = '<div class="slideshow__wrapper cf">' + $slideshow.innerHTML + '</div>';
 
+  var $slideWrapper = document.querySelector('.slideshow__wrapper');
+  setInterval(onInterval, 1000);
 
+  function onInterval() {
+    $slideWrapper.style.left = '-200px';
+  }
 
 })();
