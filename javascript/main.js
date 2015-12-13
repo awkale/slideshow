@@ -1,53 +1,78 @@
 /* CURRENTLY IN: javascript/main.js */
 (function() { // protect
+  var _SlideConfigs = {
+    innerWrapper: '.slideshow__wrapper',
+    slideItem: '.slideshow__item',
+    getInnerWrapperAsHTML: function( innerHTML ) {
+      var innerWrapperStart = '<div class="slideshow__wrapper cf">';
+      var innerWrapperEnd = '</div>';
 
-  function makeSlider( slideClass ) {
-    // your goal:
-    // using javascript, wrap the contents
-    // of the $slideshow var
-    // with:
-    // <div class="slideshow__wrapper clearfix">..image divs here..</div>
-    var $slideshow = document.querySelector(slideClass); // $(".slideshow")
+      return innerWrapperStart + innerHTML + innerWrapperEnd;
+    }
+  };
 
-    $slideshow.innerHTML = '<div class="slideshow__wrapper cf">' + $slideshow.innerHTML + '</div>';
+  var $ = function( val ) {
+    return document.querySelector( val );
+  };
+  var $All = function( val ) {
+    return document.querySelectorAll( val );
+  }
 
-    var $slideWrapper = document.querySelector(slideClass + ' .slideshow__wrapper');
-
-    // width of each image / wrapper
-    // to know how far to move
-
-    var $slideshowItem = document.querySelector(slideClass + ' .slideshow__item');
+  function getWidth( $slideshowItem ) {
     var slideshowItemStyles = getComputedStyle( $slideshowItem );
     var width = slideshowItemStyles.width;
-    width = parseInt( width, 10);
+    return parseInt( width, 10 );
+  }
 
-    // get number of images
-    // to get contraint and reset
-    var slideLen = document.querySelectorAll(slideClass + ' .slideshow__item').length;
+  function SlideShow(slideClass) {
+    this.$slideshow = $(slideClass);
+    this.$slideshow.innerHTML = _SlideConfigs.getInnerWrapperAsHTML(
+      this.$slideshow.innerHTML
+      );
 
-    // keep track of current image
-    var currImage = 0;
+    this.$slideWrapper = $(slideClass + ' ' + _SlideConfigs.innerWrapper);
+    this.$slideshowItem = $(slideClass + ' ' + _SlideConfigs.slideItem);
+    this.slideLen = $All(slideClass + ' ' + _SlideConfigs.slideItem).length;
 
-    // update width of slideshow wrapper
-    $slideWrapper.style.width = slideLen * width + 'px';
+    this.currImage = 0;
 
-    function onInterval() {
-      currImage++;
-      if ( currImage === slideLen ) {
-        currImage = 0;
+    this.width = getWidth( this.$slideshowItem );
+
+    this.setSlideWrapperWidth();
+
+    this.tick();
+
+  } // constructor
+
+  SlideShow.prototype.setSlideWrapperWidth = function() {
+    this.$slideWrapper.style.width = this.slideLen * this.width + 'px';
+  }
+
+  SlideShow.prototype.tick = function() {
+    this.interval = setInterval(function() {
+      this.currImage++;
+      if ( this.currImage === this.slideLen ) {
+        this.currImage = 0;
       }
-      $slideWrapper.style.left = -1*currImage*width+'px';
-    }
-    setInterval(onInterval, 1000);
-  } // makeSlider
 
-  function initSlideshows( slideClass) {
+      this.$slideWrapper.style.left = -1*this.currImage*this.width+'px';
+
+    }.bind( this ), 1000);
+  }
+
+  SlideShow.prototype.pause = function() {
+    clearInterval( this.interval );
+  }
+
+  function initSlideshows( slideClass ) {
     var slideshows = document.querySelectorAll(slideClass);
-    for ( var i = 0; i < slideshows.length; ++i) {
+    var slideshowInstances = [];
+    for( var i = 0; i < slideshows.length; ++i ) {
       slideshows[ i ].classList.add('slideshow-'+i);
-      makeSlider('.slideshow-'+i);
+      new SlideShow( '.slideshow-'+i );
     }
   }
 
   initSlideshows('.slideshow');
+
 })();
