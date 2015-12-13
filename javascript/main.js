@@ -64,15 +64,18 @@
     clearInterval( this.interval );
   }
 
-  function initSlideshows( slideClass ) {
-    var slideshows = document.querySelectorAll(slideClass);
-    var slideshowInstances = [];
-    for( var i = 0; i < slideshows.length; ++i ) {
-      slideshows[ i ].classList.add('slideshow-'+i);
-      new SlideShow( '.slideshow-'+i );
-    }
+  SlideShow.prototype.start = function() {
+    this.tick();
   }
 
-  initSlideshows('.slideshow');
+  var s = new SlideShow( '.slideshow' );
+
+  $('.js-pause').addEventListener('click', function() {
+    s.pause();
+  })
+
+  $('.js-start').addEventListener('click', function() {
+    s.start();
+  })
 
 })();
