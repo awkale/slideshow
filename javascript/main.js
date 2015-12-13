@@ -24,7 +24,18 @@
     return parseInt( width, 10 );
   }
 
-  function SlideShow(slideClass) {
+  function SlideShow( slideClass, opts ) {
+    if ( opts && opts.timeoutTime ) {
+      this.timeout = opts.timeoutTime;
+    }
+    else {
+      this.timeout = 1000;
+    }
+
+    if ( opts && opts.onSlideAfter ) {
+      this.onSlideAfter = opts.onSlideAfter;
+    }
+
     this.$slideshow = $(slideClass);
     this.$slideshow.innerHTML = _SlideConfigs.getInnerWrapperAsHTML(
       this.$slideshow.innerHTML
@@ -42,40 +53,57 @@
 
     this.tick();
 
-  } // constructor
+    this.bindEvents();
 
-  SlideShow.prototype.setSlideWrapperWidth = function() {
-    this.$slideWrapper.style.width = this.slideLen * this.width + 'px';
-  }
+    } // constructor
 
-  SlideShow.prototype.tick = function() {
-    this.interval = setInterval(function() {
-      this.currImage++;
-      if ( this.currImage === this.slideLen ) {
-        this.currImage = 0;
+    SlideShow.prototype.bindEvents = function() {
+      this.$slideshow.addEventListener('mouseenter', function() {
+        this.pause();
+      }.bind(this));
+      this.$slideshow.addEventListener('mouseleave', function() {
+        this.tick();
+      }.bind(this));
+    }
+
+    SlideShow.prototype.setSlideWrapperWidth = function() {
+      this.$slideWrapper.style.width = this.slideLen * this.width + 'px';
+    }
+
+    SlideShow.prototype.tick = function() {
+      this.interval = setInterval(function() {
+        this.currImage++;
+        if ( this.currImage === this.slideLen ) {
+          this.currImage = 0;
+        }
+
+        this.$slideWrapper.style.left = -1*this.currImage*this.width+'px';
+        if ( this.onSlideAfter ) {
+          this.onSlideAfter( this.currImage );
+        }
+      }.bind( this ), this.timeout);
+    }
+
+    SlideShow.prototype.start = function() {
+      this.tick();
+    }
+
+    SlideShow.prototype.pause = function() {
+      clearInterval( this.interval );
+    }
+
+    var s = new SlideShow( '.slideshow', {
+      onSlideAfter: function( currentImage ) {
+        console.log('hello, wrold!', currentImage );
       }
+    });
 
-      this.$slideWrapper.style.left = -1*this.currImage*this.width+'px';
+    $('.js-pause').addEventListener('click', function() {
+      s.pause();
+    })
 
-    }.bind( this ), 1000);
-  }
+    $('.js-start').addEventListener('click', function() {
+      s.start();
+    })
 
-  SlideShow.prototype.pause = function() {
-    clearInterval( this.interval );
-  }
-
-  SlideShow.prototype.start = function() {
-    this.tick();
-  }
-
-  var s = new SlideShow( '.slideshow' );
-
-  $('.js-pause').addEventListener('click', function() {
-    s.pause();
-  })
-
-  $('.js-start').addEventListener('click', function() {
-    s.start();
-  })
-
-})();
+  })();
